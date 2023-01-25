@@ -1,0 +1,80 @@
+# Configuration
+
+Sidekick configuration has two levels: project configuration and user configuration.
+
+Project configuration is **required** for sidekick to work, and must exist in a `sidekick.config.ts` file in the root of your project. Sidekick uses this file to identify your project, and therefore all sidekick commands must be executed in the same directory, or a nested directory of the project containing the `sidekick.config.ts` file.
+
+This is an example of the most barebones project configuration:
+
+```ts
+import type { SidekickConfig } from '@karimsa/sidekick/config';
+
+export const config: SidekickConfig = {
+    defaultConfig: {
+        environments: {},
+        extensions: {}
+    },
+    extensions: []
+};
+```
+
+The key `defaultConfig` contains the project-level configuration that should be merged with the user-level configuration. User-level configuration is allowed to override any project-level configuration. The defaults act as a starting point for user setup, and is not copied into the user's profile, and therefore can be changed at any time.
+
+The key `extensions` contains a list of extensions that should be loaded for this project. Within `defaultConfig`, the nested `extensions` object allows you to pass configuration to the extensions that you have loaded. Again, these are only defaults and can be overriden at the user-level.
+
+**Note: sidekick will load the `sidekick.config.ts` file when it starts by transpiling it into JS, and then loading it into sidekick's running node process. This configuration file is allowed to access any modules that may have been installed in your project, but should not perform any async work or leak state into the global state.**
+
+## Environments
+
+Sidekick supports multiple execution environments, which loosely refer to a set of 'environment variables' that you want to logically link together. A common use case for this is to store separate configurations for `development`, `staging`, and `production` environments. This works really well for apps that follow the [12-factor app](https://12factor.net/) methodology, since you can track your logical groupings in sidekick for the sake of simplicity, but maintain granular controls over values within the actual configuration values.
+
+This is an example of setting a few alternative values depending on the environment:
+
+```ts
+import type { SidekickConfig } from '@karimsa/sidekick/config';
+
+export const config: SidekickConfig = {
+    defaultConfig: {
+        environments: {
+            local: {
+                PG_HOST: 'localhost',
+            },
+            production: {
+                PG_HOST: 'prod-db.example.com',
+                PG_USER: 'prod',
+            },
+        },
+        extensions: {}
+    },
+    extensions: []
+};
+```
+
+**Note: It is strongly recommend that you do NOT store passwords in plaintext in this file.**
+
+## Extensions
+
+Extensions are one of the most powerful and valuable features of sidekick. To load any custom sidekick extensions, you must add them to the `extensions` array in your `sidekick.config.ts` file. Your extension configuration must point to a valid extension entrypoint file, as well as include some metadata about the extension (such as the name, icon, and a unique ID).
+
+This is an example of loading a hello world extension:
+
+```ts
+import type { SidekickConfig } from '@karimsa/sidekick/config';
+
+export const config: SidekickConfig = {
+    defaultConfig: {
+        environments: {},
+        extensions: {}
+    },
+    extensions: [
+        {
+            id: 'hello-world',
+            icon: 'history',
+            name: 'Hello World',
+            entryPoint: './my-extensions/hello.sidekick.tsx'
+        },
+    ]
+};
+```
+
+To learn more about creating extensions, see [Extensions](/extensions).

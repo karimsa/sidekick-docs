@@ -1,4 +1,10 @@
 {
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">= 18",
+    "yarn": "^1"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
