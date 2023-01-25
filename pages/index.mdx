@@ -1,0 +1,69 @@
+import { Tabs, Tab } from "nextra-theme-docs";
+
+# Introduction
+
+Sidekick is your personal toolkit for having an incredible development experience.
+
+## Getting Started
+
+Sidekick can be installed into your project using any JS package manager:
+
+<Tabs items={['yarn', 'npm']}>
+  <Tab>
+```bash
+yarn add -D --exact @karimsa/sidekick@latest
+```
+  </Tab>
+  <Tab>
+```bash
+npm install -D --save-exact @karimsa/sidekick@latest
+```
+  </Tab>
+</Tabs>
+
+## Release channels
+
+There are multiple release channels available for sidekick. The default channel, stable, is installed and
+managed through JS package managers (see instructions above). All other channels are installed and managed
+by sidekick itself.
+
+ * `stable`: The default channel. This is the recommended channel for most users. It includes features that
+ have been tested and considered to be safe to use in production. The source for this channel is tagged commits
+ on the `main` branch.
+ * `beta`: The beta channel includes features that are generally considered stable, and will soon be promoted to
+ the stable channel. The source for this channel is the `main` branch.
+ * `nightly`: The nightly channel includes features that have completed development, but are currently being tested
+ in production. The source for this channel is the `develop` branch.
+
+**To install a new sidekick channel, run:**
+
+<Tabs items={['beta', 'nightly']}>
+  <Tab>
+```bash
+sidekick-upgrade install --channel beta --activate
+```
+  </Tab>
+  <Tab>
+```bash
+sidekick-upgrade install --channel nightly --activate
+```
+  </Tab>
+</Tabs>
+
+**To remove a sidekick channel, run:**
+
+<Tabs items={['beta', 'nightly']}>
+  <Tab>
+```bash
+sidekick-upgrade remove --channel beta
+```
+  </Tab>
+  <Tab>
+```bash
+sidekick-upgrade remove --channel nightly
+```
+  </Tab>
+</Tabs>
+
+There is no fixed release schedule, and there is no guarantee that features from `nightly` will be promoted to
+`beta` in chronological order.
