@@ -6,20 +6,33 @@ Sidekick is your personal toolkit for having an incredible development experienc
 
 ## Getting Started
 
-Sidekick can be installed into your project using any JS package manager:
+Sidekick can be installed into your project using any JS package manager. The only peer dependency it has is `zod`.
 
 <Tabs items={['yarn', 'npm']}>
   <Tab>
 ```bash
-yarn add -D --exact @karimsa/sidekick@latest
+yarn add -D --exact @karimsa/sidekick@latest zod@latest
 ```
   </Tab>
   <Tab>
 ```bash
-npm install -D --save-exact @karimsa/sidekick@latest
+npm install -D --save-exact @karimsa/sidekick@latest zod@latest
 ```
   </Tab>
 </Tabs>
+
+Next, you must configure sidekick using a `sidekick.config.ts` file. For more information, see the [configuration](/docs/configuration) page.
+
+Finally, you can start sidekick by running:
+
+```
+$ yarn sidekick start
+Sidekick started on http://[::1]:9010
+```
+
+You should then be able to access sidekick through any web browser by visiting `http://[::1]:9010` (or `http://localhost:9010` on most machines).
+
+**Tip: you can modify your `/etc/hosts` file to add `sidekick.local ::1` so you can quickly access sidekick by entering `sidekick.local` and allowing your browser to auto-complete the full URL.**
 
 ## Release channels
 
@@ -65,5 +78,16 @@ sidekick-upgrade remove --channel nightly
   </Tab>
 </Tabs>
 
-There is no fixed release schedule, and there is no guarantee that features from `nightly` will be promoted to
-`beta` in chronological order.
+**To check what version of sidekick your project is set to use:**
+
+```bash
+$ yarn sidekick version
+{
+  version: '0.10.3',
+  mode: 'production',
+  releaseChannel: 'stable',
+  node: 'v18.12.1'
+}
+```
+
+There is no fixed release schedule, and there is no guarantee that features from `nightly` will be promoted to `beta` in chronological order.

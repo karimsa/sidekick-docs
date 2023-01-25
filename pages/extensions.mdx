@@ -1,3 +1,51 @@
+import Image from 'next/image'
+
 # Extensions
 
-....
+Extensions are one of the most powerful and valuable features of sidekick. They allow you to build custom devtools for your team that support your unique developer workflows and your codebase. Extensions in sidekick are primarily React apps, where the scaffolding for loading the app into the browser is handled by sidekick. Sidekick will also handle a convenience features for you such as interacting with the user's configuration for your extension, accessing system-level information through Node.js, and more.
+
+To jump ahead to code, you can checkout the repository [karimsa/sidekick-extension-example](https://github.com/karimsa/sidekick-extension-example).
+
+## Writing a simple extension
+
+To start writing an extension, create a `.sidekick.tsx` file anywhere in your repo. Next, configure sidekick to load this extension through the `sidekick.config.ts` file. Your extension file must export a React component called `Page` that will be rendered in the browser. All extensions run in their own `<iframe>` within sidekick, so your extension can use any React version you want and can modify global state without interfering with sidekick or other extensions.
+
+Here is an example of a simple hello world extension written in `hello.sidekick.tsx`:
+
+```tsx
+import React from 'react';
+
+export function Page() {
+    return <p>Hello world! Welcome to my first sidekick extension.</p>;
+}
+```
+
+To load this extension, add the following to your `sidekick.config.ts` file:
+
+```ts
+import type { SidekickConfig } from '@karimsa/sidekick/config';
+
+export const config: SidekickConfig = {
+    defaultConfig: {
+        environments: {},
+        extensions: {}
+    },
+    extensions: [
+        {
+            id: 'hello-world',
+            icon: 'history',
+            name: 'Hello World',
+            entryPoint: './hello.sidekick.tsx'
+        },
+    ]
+};
+```
+
+Once you have done both of these, you can run sidekick via `yarn sidekick start` and head over to the browser to see:
+
+<Image
+    src="/extensions/hello-world-extension-1.png"
+    alt="Hello World rendered in sidekick in a browser"
+    width={1024}
+    height={659}
+/>
