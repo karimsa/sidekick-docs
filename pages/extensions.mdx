@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { Callout } from 'nextra-theme-docs'
+import { Lightbox } from '../components/Lightbox'
 
 # Extensions
 
@@ -177,3 +178,16 @@ export async function readSelf() {
 <Callout type="info">
     The above code examples are not the actual code that sidekick would output, but are meant to illustrate how the bundling process works.
 </Callout>
+
+The following is a more detailed breakdown of the bundling pipeline used internally by sidekick:
+
+<Lightbox>
+    <div className='mt-6 rounded-lg py-6 px-6 bg-white'>
+        <Image
+            src="/extensions/build-pipeline.png"
+            alt="A diagram showing how sidekick bundles extensions"
+            width={1024}
+            height={659}
+        />
+    </div>
+</Lightbox>
