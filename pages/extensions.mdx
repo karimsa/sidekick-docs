@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { Callout } from 'nextra-theme-docs'
 
 # Extensions
 
@@ -49,3 +50,130 @@ Once you have done both of these, you can run sidekick via `yarn sidekick start`
     width={1024}
     height={659}
 />
+
+## Writing backend queries & mutations
+
+Extensions can also contain 'backend functions', which are really just JS functions that will execute in their own Node.js process, and therefore have system access. You can use these functions to access information that is not accessible to you in the browser, such as to access the filesystem or interact with a database. For more information on how this works, please see the [How extensions are loaded](#how-extensions-are-loaded) section below.
+
+<Callout type="info">sidekick will run your functions using the same node runtime that is used to run sidekick. This means that whatever version of node you use to start sidekick will be the same version of node that your functions must be compatible with.</Callout>
+
+As an example, let's modify our hello world extension to read its own source code and show it in the browser:
+
+```tsx
+import React from 'react';
+import { useQuery } from '@karimsa/sidekick/extension';
+import * as fs from 'fs';
+
+async function readSelf() {
+    // This is possible because all sidekick extension functions will run from your project's
+    // root as its working directory.
+    return fs.promises.readFile('./hello.sidekick.tsx', 'utf-8');
+}
+
+export function Page() {
+    const { data, error } = useQuery(readSelf, {});
+
+    return (
+        <>
+            {error && <p>Error: {error.message}</p>}
+            {data && (
+                <pre>
+                    <code>{data}</code>
+                </pre>
+            )}
+        </>
+    )
+}
+```
+
+<Callout type="info">`@karimsa/sidekick/extension` is a special module that you DO NOT need to install, and will be made available to your extension when it is run.</Callout>
+
+When you run this extension, you will see the following:
+
+<Image
+    src="/extensions/hello-world-extension-2.png"
+    alt="Source code for hello world rendered inside sidekick"
+    width={1024}
+    height={659}
+/>
+
+You can also do this with mutations:
+
+```tsx
+import React from 'react';
+import * as fs from 'fs';
+import { useMutation } from '@karimsa/sidekick/extension';
+
+async function writeFile(content: string) {
+    return fs.promises.writeFile('./test.txt', content, 'utf-8');
+}
+
+export function Page() {
+    const [content, setContent] = React.useState('');
+    const { mutate: performWriteSelf } = useMutation(writeSelf);
+
+    return (
+        <>
+            <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+            />
+            <button onClick={() => performWriteSelf(content)}>Save</button>
+        </>
+    )
+}
+```
+
+Both `useQuery` and `useMutation` wrap the methods by the same name from [`react-query`](https://react-query-v3.tanstack.com/) so you can also pass additional options if you need to, but they provide some really nice builtins like queries will automatically refetch on focus and will also retry automatically.
+
+<Callout type="warning">
+    `useQuery` and `useMutation` are not normal React hooks, and should not be composed. The sidekick bundler relies on tracing the uses of these hooks back to the `@karimsa/sidekick/extension` module. If it finds unexpected uses of these hooks, it will complain and refuse to let your extension run.
+</Callout>
+
+## How extensions are loaded
+
+Sidekick performs some special bundling on your extension's entrypoint to allow for an optimal developer experience when developing extensions.
+
+The first step that sidekick performs to bundle your extension is to rollup all of your extension code into a single file. This allows you to write your extension as you would a normal React app, across multiple files using TS, JSX, and any other features that you would expect from a modern React app.
+
+Next, sidekick separates your combined extension file into a 'backend' and 'frontend' version. This is done by using the `useQuery()` and `useMutation()` calls as hints for sidekick to know which parts belong to the backend vs. frontend. The function that is passed to these hooks as the first parameter must always be a top-level declared async function (it can come from another file, but must be top-level in that file). These functions are assumed to be backend code, and split from the frontend code. The `Page` component export is considered to be the entrypoint to your extension, and anything that `Page` does not rely on is tree-shaken to be removed from your app.
+
+The hello world example that we worked with above might be separated like this:
+
+**Frontend**
+
+```tsx
+import React from 'react';
+import { useQuery } from '@karimsa/sidekick/extension';
+
+export function Page() {
+    const { data, error } = useQuery('readSelf', {});
+
+    return (
+        <>
+            {error && <p>Error: {error.message}</p>}
+            {data && (
+                <pre>
+                    <code>{data}</code>
+                </pre>
+            )}
+        </>
+    )
+}
+```
+
+**Backend**
+
+```ts
+import * as fs from 'fs';
+
+export async function readSelf() {
+    // This is possible because all sidekick extension functions will run from your project's
+    // root as its working directory.
+    return fs.promises.readFile('./hello.sidekick.tsx', 'utf-8');
+}
+```
+
+<Callout type="info">
+    The above code examples are not the actual code that sidekick would output, but are meant to illustrate how the bundling process works.
+</Callout>
