@@ -191,3 +191,38 @@ The following is a more detailed breakdown of the bundling pipeline used interna
         />
     </div>
 </Lightbox>
+
+## Extension helpers (Reference)
+
+All of the sidekick helpers use [react-query](https://react-query-v3.tanstack.com). To stay consistent with react-query patterns, all of the sidekick hooks try to maintain a similar result data shape as the react-query hooks.
+
+### `useQuery`
+
+A React hook that can be used to execute read-only backend operations. This provides you with some sane defaults that provide an optimal UX:
+
+ * The backend function passed to this hook will be automatically executed as the component renders.
+ * If there are failures, they will be automatically retried (up to 3 times).
+ * If the user focuses away and then refocuses on the page, the query will automatically refetch.
+
+Retry behaviours, refetch on focus, and other options can be controlled by passing an `options` object as the third parameter to `useQuery()`, which is passed forward to [`react-query`](https://react-query-v3.tanstack.com).
+
+### `useQueryInvalidator`
+
+A React hook that can be used to force a query on a different part of the page to refetch. Currently, this performs a wildcard invalidation, meaning that all queries that rely on the given backend function will be refreshed.
+
+### `useMutation`
+
+A React hook that can be used to execute read-write backend operations. This provides you with some sane defaults that provide an optimal UX:
+
+ * The backend function passed to this hook will not be automatically executed, but rather run when the `mutate()` function returned by this hook is called.
+ * Failures will not be retried.
+
+Similar to `useQuery`, this hook accepts a third `options` parameter that is passed through to [`react-query`](https://react-query-v3.tanstack.com).
+
+### `useConfig`
+
+A React hook that can be used to read the configuration for your extension. This is useful if you want to provide some configuration options to your extension, such as a list of allowed file extensions, or a list of allowed file paths.
+
+### `useTargetEnvironments`
+
+A React hook that will return a list of the target environments that the user has configured in their sidekick (i.e. `local`, `staging`, `production`). This is useful because both `useQuery` and `useMutation`
