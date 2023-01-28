@@ -1,5 +1,6 @@
 {
     "index": "Introduction",
     "config": "Configuring sidekick",
+    "dev-servers": "Managing dev servers",
     "extensions": "Extensions"
 }

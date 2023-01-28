@@ -1,0 +1,11 @@
+# Managing dev servers
+
+A key pain when working on a full-stack application or working within a monorepo is having to manage multiple different dev servers, compilers running in watch mode, and other processes. This becomes more painful when you have internal shared 'packages' that your applications depend on, and you also have to either run dev servers for your packages or build them after updates/changing branches.
+
+Sidekick makes much of this simpler by providing a web-based process manager that puts all common operations one-click away.
+
+## Logically grouping services using tags
+
+All services can have any number of user-defined tags in their `.sidekick.json` files. These tags are used to group services together in the UI, and can be used to start/stop multiple services at once.
+
+
